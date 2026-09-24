@@ -2,193 +2,200 @@
 
 import { useMemo, useState } from "react";
 import { useCountiesData } from "../../lib/useCountiesData";
-import { TrendingUp, Database, Code } from "lucide-react";
 
 export default function AnalystPage() {
   const { data, dataSource, loading } = useCountiesData();
   const [selectedCounty, setSelectedCounty] = useState(null);
 
-  // Quadrant Data Breakdown (WGS vs Urgency)
   const quadrantData = useMemo(() => {
-    const q1 = []; // High Urgency (>= 0.4), Low Governance (WGS < 0.6)
-    const q2 = []; // High Urgency (>= 0.4), High Governance (WGS >= 0.6)
-    const q3 = []; // Low Urgency (< 0.4), Low Governance (WGS < 0.6)
-    const q4 = []; // Low Urgency (< 0.4), High Governance (WGS >= 0.6)
-
+    const q1 = [], q2 = [], q3 = [], q4 = [];
     data.forEach((r) => {
-      const isHighUrgency = r.urgencyScore >= 0.45;
-      const isHighGov = r.wgs >= 0.6;
-
-      if (isHighUrgency && !isHighGov) q1.push(r);
-      else if (isHighUrgency && isHighGov) q2.push(r);
-      else if (!isHighUrgency && !isHighGov) q3.push(r);
+      const hi = r.urgencyScore >= 0.36;
+      const hg = r.wgs >= 0.42;
+      if (hi && !hg) q1.push(r);
+      else if (hi && hg) q2.push(r);
+      else if (!hi && !hg) q3.push(r);
       else q4.push(r);
     });
-
     return { q1, q2, q3, q4 };
   }, [data]);
 
   return (
     <main className="wrap">
-      <header className="app-header">
-        <div>
-          <h1 className="hero-title">Technical Analyst</h1>
-          <p className="hero-subtitle">
-            Governance vs. Urgency risk matrix and data source telemetry.
-          </p>
+      {/* PAGE HEADER */}
+      <header className="page-header">
+        <div className="page-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="7.5" cy="7.5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="11" cy="19" r="2"/><circle cx="17" cy="14" r="2"/><path d="M7.5 7.5 17 14M18 5 17 14M11 19 17 14"/></svg>
+          Kenya · County Risk vs. Governance · 2026 Model
         </div>
+        <h1 className="page-title">Who Needs Help? And Can They Absorb It?</h1>
+        <p className="page-subtitle">
+          Counties plotted on two axes: how severe is their predicted water disruption, and how capable is their utility of implementing an intervention? Four clusters, four distinct strategies.
+        </p>
       </header>
 
-      {/* TECHNICAL ANALYST VIEW: QUADRANT MATRIX */}
-      <section style={{ marginBottom: "2.5rem" }}>
-        <div style={{ marginBottom: "1rem" }}>
-          <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <TrendingUp size={20} style={{ color: "var(--cyan-glow)" }} /> Governance (WGS) vs. Urgency Risk Quadrant Matrix
-          </h3>
-          <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)" }}>
-            Plotting Water Governance Score (WGS) against Machine Learning Predicted Disruption Urgency.
-          </p>
+      {/* ── MATRIX SECTION ── */}
+      <section style={{ marginBottom: "2.25rem" }}>
+        <h2 className="section-title">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          {data.length} Counties Mapped - Governance Readiness vs. Urgency of Need
+        </h2>
+
+        {/* Axis labels */}
+        <div style={{ display:"flex", justifyContent:"center", marginBottom:"0.5rem" }}>
+          <span style={{ fontSize:"0.75rem", color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.07em" }}>
+            ← Low Governance · · · · High Governance →
+          </span>
         </div>
 
-        <div className="quadrant-grid">
-          {/* Q1 */}
-          <div className="quadrant-box q1">
-            <div>
-              <h5>
-                <span>Q1: Direct State Intervention</span>
-                <span className="tier-pill critical" style={{ fontSize: "0.7rem" }}>{quadrantData.q1.length} Counties</span>
-              </h5>
-              <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
-                High Urgency + Low Governance (Require emergency national taskforce & solar wells)
-              </p>
-            </div>
-            <div className="county-tags">
-              {quadrantData.q1.map((c) => (
-                <span key={c.county} className="county-tag" onClick={() => setSelectedCounty(c)} style={{ cursor: "pointer" }}>
-                  {c.county}
-                </span>
-              ))}
-            </div>
+        <div style={{ display:"flex", gap:"0.5rem", alignItems:"stretch" }}>
+          {/* Vertical axis label */}
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", width:"22px", flexShrink:0 }}>
+            <span style={{ fontSize:"0.72rem", color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.07em", writingMode:"vertical-rl", transform:"rotate(180deg)" }}>
+              ↑ High Urgency
+            </span>
           </div>
 
-          {/* Q2 */}
-          <div className="quadrant-box q2">
-            <div>
-              <h5>
-                <span>Q2: Priority Capital Injection</span>
-                <span className="tier-pill high" style={{ fontSize: "0.7rem" }}>{quadrantData.q2.length} Counties</span>
-              </h5>
-              <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
-                High Urgency + High Governance (Ready for direct utility financing & pipe expansion)
-              </p>
+          <div className="quadrant-grid" style={{ flex:1 }}>
+            {/* Q1 - top-left: high urgency, low gov */}
+            <div className="quadrant-box q1">
+              <div className="quadrant-header">
+                <div>
+                  <div className="quadrant-title">Q1 · Direct State Intervention</div>
+                  <div className="quadrant-desc">High Urgency + Weak Governance - national emergency taskforce &amp; solar wells required.</div>
+                </div>
+                <span className="tier-pill critical">{quadrantData.q1.length}</span>
+              </div>
+              <div className="county-tags">
+                {quadrantData.q1.map((c) => (
+                  <span key={c.county} className="county-tag" onClick={() => setSelectedCounty(c)}>{c.county}</span>
+                ))}
+                {quadrantData.q1.length === 0 && <span style={{color:"var(--text-muted)",fontSize:"0.8rem"}}>No counties in this quadrant</span>}
+              </div>
             </div>
-            <div className="county-tags">
-              {quadrantData.q2.map((c) => (
-                <span key={c.county} className="county-tag" onClick={() => setSelectedCounty(c)} style={{ cursor: "pointer" }}>
-                  {c.county}
-                </span>
-              ))}
-            </div>
-          </div>
 
-          {/* Q3 */}
-          <div className="quadrant-box q3">
-            <div>
-              <h5>
-                <span>Q3: Governance Capacity Building</span>
-                <span className="tier-pill moderate" style={{ fontSize: "0.7rem" }}>{quadrantData.q3.length} Counties</span>
-              </h5>
-              <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
-                Low Urgency + Low Governance (Focus on WSP institutional strengthening)
-              </p>
+            {/* Q2 - top-right: high urgency, high gov */}
+            <div className="quadrant-box q2">
+              <div className="quadrant-header">
+                <div>
+                  <div className="quadrant-title">Q2 · Priority Capital Injection</div>
+                  <div className="quadrant-desc">High Urgency + Strong Governance - ready for direct utility financing &amp; pipe expansion.</div>
+                </div>
+                <span className="tier-pill high">{quadrantData.q2.length}</span>
+              </div>
+              <div className="county-tags">
+                {quadrantData.q2.map((c) => (
+                  <span key={c.county} className="county-tag" onClick={() => setSelectedCounty(c)}>{c.county}</span>
+                ))}
+                {quadrantData.q2.length === 0 && <span style={{color:"var(--text-muted)",fontSize:"0.8rem"}}>No counties in this quadrant</span>}
+              </div>
             </div>
-            <div className="county-tags">
-              {quadrantData.q3.map((c) => (
-                <span key={c.county} className="county-tag" onClick={() => setSelectedCounty(c)} style={{ cursor: "pointer" }}>
-                  {c.county}
-                </span>
-              ))}
-            </div>
-          </div>
 
-          {/* Q4 */}
-          <div className="quadrant-box q4">
-            <div>
-              <h5>
-                <span>Q4: Routine Infrastructure Maintenance</span>
-                <span className="tier-pill low" style={{ fontSize: "0.7rem" }}>{quadrantData.q4.length} Counties</span>
-              </h5>
-              <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
-                Low Urgency + High Governance (Stable performance, standard asset lifecycle)
-              </p>
+            {/* Q3 - bottom-left: low urgency, low gov */}
+            <div className="quadrant-box q3">
+              <div className="quadrant-header">
+                <div>
+                  <div className="quadrant-title">Q3 · Governance Capacity Building</div>
+                  <div className="quadrant-desc">Low Urgency + Weak Governance - focus on WSP institutional strengthening &amp; training.</div>
+                </div>
+                <span className="tier-pill moderate">{quadrantData.q3.length}</span>
+              </div>
+              <div className="county-tags">
+                {quadrantData.q3.map((c) => (
+                  <span key={c.county} className="county-tag" onClick={() => setSelectedCounty(c)}>{c.county}</span>
+                ))}
+                {quadrantData.q3.length === 0 && <span style={{color:"var(--text-muted)",fontSize:"0.8rem"}}>No counties in this quadrant</span>}
+              </div>
             </div>
-            <div className="county-tags">
-              {quadrantData.q4.map((c) => (
-                <span key={c.county} className="county-tag" onClick={() => setSelectedCounty(c)} style={{ cursor: "pointer" }}>
-                  {c.county}
-                </span>
-              ))}
+
+            {/* Q4 - bottom-right: low urgency, high gov */}
+            <div className="quadrant-box q4">
+              <div className="quadrant-header">
+                <div>
+                  <div className="quadrant-title">Q4 · Routine Maintenance</div>
+                  <div className="quadrant-desc">Low Urgency + Strong Governance - stable performance; standard asset lifecycle management.</div>
+                </div>
+                <span className="tier-pill low">{quadrantData.q4.length}</span>
+              </div>
+              <div className="county-tags">
+                {quadrantData.q4.map((c) => (
+                  <span key={c.county} className="county-tag" onClick={() => setSelectedCounty(c)}>{c.county}</span>
+                ))}
+                {quadrantData.q4.length === 0 && <span style={{color:"var(--text-muted)",fontSize:"0.8rem"}}>No counties in this quadrant</span>}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* DATA SOURCE TELEMETRY */}
-      <section className="glass-panel" style={{ marginTop: "2rem" }}>
-        <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
-          <Database size={18} style={{ color: "var(--cyan-glow)" }} /> Telemetry & Schema
-        </h3>
-        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
-          Current Pipeline Status: <strong>{loading ? "Loading..." : dataSource === "supabase" ? "Connected to Supabase PostgreSQL" : "Local JSON Dataset Loaded"}</strong>
+      {/* ── TELEMETRY CARD ── */}
+      <div className="telemetry-card">
+        <div className="telemetry-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+          </svg>
+          Live Data Source
+        </div>
+        <p style={{ fontSize:"0.875rem", color:"var(--text-muted)", marginBottom:"1rem" }}>
+          Reading from: <strong style={{color:"#fff"}}>{loading ? "Connecting…" : dataSource === "supabase" ? "Supabase PostgreSQL (live, real-time)" : "Local dataset (counties.json)"}</strong>
+          {" "}- {data.length} county records.
         </p>
-
-        <div style={{ background: "rgba(0,0,0,0.3)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-glass)", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.8rem", color: "var(--text-muted)" }}>
-          <div style={{ color: "var(--cyan-glow)", marginBottom: "0.5rem" }}>$ SELECT * FROM public.counties LIMIT 1;</div>
-          {loading ? "..." : JSON.stringify(data[0] || {}, null, 2)}
+        <div className="code-block">
+          <div className="code-prompt">$ SELECT * FROM public.counties ORDER BY urgency_score DESC LIMIT 1;</div>
+          {loading ? "Fetching…" : JSON.stringify(data[0] || {}, null, 2)}
         </div>
-      </section>
+      </div>
 
-      {/* COUNTY DETAIL MODAL */}
+      {/* ── COUNTY MODAL ── */}
       {selectedCounty && (
         <div className="modal-overlay" onClick={() => setSelectedCounty(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
-                <span className={`tier-pill ${selectedCounty.urgencyTier.toLowerCase()}`} style={{ marginBottom: "0.5rem" }}>
-                  {selectedCounty.urgencyTier} Urgency Tier
-                </span>
-                <h2 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#fff" }}>{selectedCounty.county} County</h2>
+                <span className={`tier-pill ${selectedCounty.urgencyTier.toLowerCase()}`}>{selectedCounty.urgencyTier}</span>
+                <div className="modal-county-name">{selectedCounty.county} County</div>
               </div>
-              <button className="close-btn" onClick={() => setSelectedCounty(null)}>
-                &times;
-              </button>
+              <button className="modal-close" onClick={() => setSelectedCounty(null)}>×</button>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
-              <div style={{ background: "rgba(255,255,255,0.04)", padding: "1rem", borderRadius: "10px" }}>
-                <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Urgency Index</div>
-                <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "var(--cyan-glow)", fontFamily: "'JetBrains Mono', monospace" }}>
-                  {selectedCounty.urgencyScore.toFixed(3)}
-                </div>
+            <div className="modal-grid">
+              <div className="modal-stat">
+                <div className="modal-stat-label">Urgency Index</div>
+                <div className="modal-stat-value cyan">{selectedCounty.urgencyScore.toFixed(3)}</div>
               </div>
-
-              <div style={{ background: "rgba(255,255,255,0.04)", padding: "1rem", borderRadius: "10px" }}>
-                <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Governance Index (WGS)</div>
-                <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#fff", fontFamily: "'JetBrains Mono', monospace" }}>
-                  {selectedCounty.wgs.toFixed(2)} <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>({selectedCounty.wgsTier})</span>
-                </div>
+              <div className="modal-stat">
+                <div className="modal-stat-label">Governance Score (WGS)</div>
+                <div className="modal-stat-value">{selectedCounty.wgs.toFixed(2)}</div>
+              </div>
+              <div className="modal-stat">
+                <div className="modal-stat-label">Citizens at Risk</div>
+                <div className="modal-stat-value">{selectedCounty.citizensDisrupted2026.toLocaleString()}</div>
+              </div>
+              <div className="modal-stat">
+                <div className="modal-stat-label">ML Risk Score</div>
+                <div className="modal-stat-value">{(selectedCounty.meanPredRisk * 100).toFixed(1)}%</div>
               </div>
             </div>
 
-            <button
-              onClick={() => setSelectedCounty(null)}
-              style={{ width: "100%", padding: "0.75rem", background: "rgba(255,255,255,0.1)", border: "none", borderRadius: "10px", color: "#fff", fontWeight: 700, cursor: "pointer" }}
-            >
-              Close
-            </button>
+            <div className="modal-action-box">
+              <div className="modal-action-label">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                Recommended Action
+              </div>
+              <div className="modal-action-text">{selectedCounty.primaryIntervention}</div>
+            </div>
+
+            <button className="modal-btn-close" onClick={() => setSelectedCounty(null)}>Close</button>
           </div>
         </div>
       )}
+
+      <footer className="page-footer">
+        <span>Water Futures Kenya · WGS threshold: 0.42 (avg) · Urgency threshold: 0.36 (High/Critical)</span>
+        <span>Source: KHS 2023/24 · WASREB</span>
+      </footer>
     </main>
   );
 }
