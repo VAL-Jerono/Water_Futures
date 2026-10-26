@@ -142,7 +142,7 @@ export default function ExecutivePage() {
 
       <footer className="page-footer">
         <span>Source: Kenya Household Survey 2023/24 · KPHC 2019 population projections · WASREB WGS Index</span>
-        <span>Water Futures Kenya · {new Date().getFullYear()}</span>
+        <span>Maji Metrics Kenya · {new Date().getFullYear()}</span>
       </footer>
     </main>
   );

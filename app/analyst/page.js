@@ -193,7 +193,7 @@ export default function AnalystPage() {
       )}
 
       <footer className="page-footer">
-        <span>Water Futures Kenya · WGS threshold: 0.42 (avg) · Urgency threshold: 0.36 (High/Critical)</span>
+        <span>Maji Metrics Kenya · WGS threshold: 0.42 (avg) · Urgency threshold: 0.36 (High/Critical)</span>
         <span>Source: KHS 2023/24 · WASREB</span>
       </footer>
     </main>

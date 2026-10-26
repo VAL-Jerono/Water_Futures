@@ -1,4 +1,4 @@
-# Water Futures — County Intervention Dashboard
+# Maji Metrics — County Intervention Dashboard
 
 Minimal Next.js dashboard for the population-weighted water disruption
 urgency scores by county.

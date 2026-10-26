@@ -2,7 +2,7 @@ import "./globals.css";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Water Futures - Kenya Water Storyboard",
+  title: "Maji Metrics - Kenya Water Storyboard",
   description: "Kenya County Water Disruption & Intervention Decision Dashboard",
 };
 
@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
               <path d="M12 2C12 2 5 9.5 5 14a7 7 0 0 0 14 0C19 9.5 12 2 12 2Z" fill="currentColor" fillOpacity="0.9"/>
               <path d="M9 17c0 1.657 1.343 3 3 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
             </svg>
-            WATER FUTURES
+            MAJI METRICS
           </Link>
 
           {/* Nav Links */}
