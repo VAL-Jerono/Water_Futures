@@ -5,6 +5,12 @@ import { useCountiesData } from "../../lib/useCountiesData";
 
 const TIER_ORDER = ["Critical", "High", "Moderate", "Low"];
 
+const formatBudget = (amountInMillions) => (
+  amountInMillions >= 1000
+    ? `KSh ${(amountInMillions / 1000).toFixed(2).replace(/\.?0+$/, "")}B`
+    : `KSh ${amountInMillions.toLocaleString()}M`
+);
+
 export default function ManagerPage() {
   const { data, loading, summaryMetrics } = useCountiesData();
 
@@ -77,11 +83,11 @@ export default function ManagerPage() {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
               </svg>
-              If we invest KSh {simulatedBudget.toLocaleString()}M - who does it reach?
+              If we invest {formatBudget(simulatedBudget)} - who does it reach?
             </div>
             <div className="simulator-subtitle">KSh 250M deployed per county. Slide left or right to explore the human impact of different funding levels.</div>
           </div>
-          <div className="simulator-budget-display">KSh {simulatedBudget.toLocaleString()}M</div>
+          <div className="simulator-budget-display">{formatBudget(simulatedBudget)}</div>
         </div>
 
         <input
