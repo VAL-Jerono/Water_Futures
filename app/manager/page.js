@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useCountiesData } from "../../lib/useCountiesData";
+import KenyaCountyMap from "./KenyaCountyMap";
 
 const TIER_ORDER = ["Critical", "High", "Moderate", "Low"];
 
@@ -21,6 +22,7 @@ export default function ManagerPage() {
   const [sortField, setSortField] = useState("urgencyScore");
   const [sortDir, setSortDir] = useState("desc");
   const [selectedCounty, setSelectedCounty] = useState(null);
+  const [view, setView] = useState("map");
 
   const filteredData = useMemo(() => {
     return data
@@ -33,6 +35,7 @@ export default function ManagerPage() {
         return sortDir === "asc" ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0);
       });
   }, [data, tierFilter, equityOnly, search, sortField, sortDir]);
+  const filteredCountyNames = useMemo(() => filteredData.map((county) => county.county), [filteredData]);
 
   const simulationResults = useMemo(() => {
     const countCovered = Math.min(data.length, Math.floor(simulatedBudget / 250));
@@ -138,9 +141,20 @@ export default function ManagerPage() {
           <input type="checkbox" checked={equityOnly} onChange={(e) => setEquityOnly(e.target.checked)} />
           High-vulnerability communities only
         </label>
+        <div className="view-toggle" aria-label="Choose data view">
+          <button className={view === "map" ? "active" : ""} onClick={() => setView("map")}>Map View</button>
+          <button className={view === "table" ? "active" : ""} onClick={() => setView("table")}>Table View</button>
+        </div>
       </div>
 
-      {/* ── PRIORITY TABLE ── */}
+      {view === "map" ? (
+        <KenyaCountyMap
+          counties={data}
+          filteredCountyNames={filteredCountyNames}
+          onSelect={setSelectedCounty}
+        />
+      ) : (
+      /* ── PRIORITY TABLE ── */
       <div className="table-wrapper">
         <table>
           <thead>
@@ -191,6 +205,7 @@ export default function ManagerPage() {
           </tbody>
         </table>
       </div>
+      )}
 
       {/* ── COUNTY MODAL ── */}
       {selectedCounty && (

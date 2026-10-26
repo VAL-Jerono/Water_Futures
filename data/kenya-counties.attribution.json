@@ -1,0 +1,8 @@
+{
+  "dataset": "geoBoundaries Kenya ADM1 simplified boundaries",
+  "source": "RCMRD GeoPortal, Africa GeoPortal via geoBoundaries",
+  "sourceUrl": "https://www.geoboundaries.org/api/current/gbOpen/KEN/ADM1/",
+  "license": "Public Domain",
+  "boundaryType": "ADM1",
+  "boundaryUnits": 47
+}
